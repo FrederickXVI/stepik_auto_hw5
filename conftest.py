@@ -1,17 +1,14 @@
 import pytest
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 
-# добавляем параметр --language для pytest
+# добавляем параметр --language --browser_name для pytest
 def pytest_addoption(parser):
-    parser.addoption('--language', action='store', default="en-gb",
+    parser.addoption('--language', action='store', default="en",
                      help="Choose language")
-
-
-# возвращаем значение параметра --language
-@pytest.fixture(scope="function")
-def language(request):
-    return request.config.getoption("--language")
+    parser.addoption('--browser_name', action='store', default="chrome",
+                     help="Choose browser: chrome or firefox")
 
 
 @pytest.fixture(scope="class")
@@ -25,9 +22,21 @@ def get_password():
 
 
 @pytest.fixture(scope="class")
-def browser():
-    print("\nstart browser for test..")
-    browser = webdriver.Chrome()
+def browser(request):
+    browser_name = request.config.getoption("browser_name")
+    user_language = request.config.getoption("language")
+    if browser_name == "chrome":
+        print("\nstart chrome browser for test..")
+        options = Options()
+        options.add_experimental_option('prefs', {'intl.accept_languages': user_language})
+        browser = webdriver.Chrome(options=options)
+    elif browser_name == "firefox":
+        print("\nstart firefox browser for test..")
+        fp = webdriver.FirefoxProfile()
+        fp.set_preference("intl.accept_languages", user_language)
+        browser = webdriver.Firefox(firefox_profile=fp)
+    else:
+        raise pytest.UsageError("--browser_name should be chrome or firefox")
     yield browser
     print("\nquit browser..")
     browser.quit()
