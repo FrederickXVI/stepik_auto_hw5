@@ -11,17 +11,17 @@ def pytest_addoption(parser):
                      help="Choose browser: chrome or firefox")
 
 
-@pytest.fixture(scope="class")
+@pytest.fixture(scope="function")
 def get_login():
     return "dimatest@test.ru"
 
 
-@pytest.fixture(scope="class")
+@pytest.fixture(scope="function")
 def get_password():
     return "dimatest123"
 
 
-@pytest.fixture(scope="class")
+@pytest.fixture(scope="function")
 def browser(request):
     browser_name = request.config.getoption("browser_name")
     user_language = request.config.getoption("language")
