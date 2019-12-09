@@ -33,3 +33,26 @@ def test_guest_cant_see_product_in_basket_opened_from_main_page(browser):
     basket_page.should_not_be_basket_formset()
     # Ожидаем, что есть текст о том что корзина пуста
     basket_page.should_be_empty_basket_message()
+
+
+# по логике эти тесты должны относиться к тест сьюту test_login_page,
+# поэтому они были размещены в отдельный класс
+@pytest.mark.need_review_custom_scenarios
+class TestActionsInLoginPageWithEmptyData():
+    def test_guest_cant_login_with_empty_data(self, browser):
+        link = "http://selenium1py.pythonanywhere.com/accounts/login/"
+        page = LoginPage(browser, link)
+        page.open()
+        page.should_be_login_page()
+        page.remove_login_form_required_attribute()
+        page.login_button_click()
+        page.should_be_danger_msg_in_login_form()
+
+    def test_guest_cant_register_with_empty_data(self, browser):
+        link = "http://selenium1py.pythonanywhere.com/accounts/login/"
+        page = LoginPage(browser, link)
+        page.open()
+        page.should_be_login_page()
+        page.remove_register_form_required_attribute()
+        page.register_button_click()
+        page.should_be_danger_msg_in_register_form()
